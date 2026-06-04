@@ -822,13 +822,14 @@ body {
      Atau kalau mau pakai file lokal:
      src="nama-file.mp3" (taruh di folder yang sama dengan HTML ini)
 ================================================================ -->
-<audio
+<!-- 🎵 MUSIK — Google Drive embed (hidden) -->
+<iframe
   id="bg-music-player"
-  loop
-  autoplay
-  style="display:none"
-  src="lagu.mp3" /* 🎵 TARUH FILE MP3 KAMU DI FOLDER YANG SAMA, RENAME JADI lagu.mp3 */>
-</audio>
+  src="https://drive.google.com/file/d/1MRgnAC4_O8FHoTprTLItPmEZFmXRKVaa/preview"
+  width="1" height="1"
+  style="position:fixed;bottom:-100px;left:0;opacity:0;pointer-events:none"
+  allow="autoplay">
+</iframe>
 
 <!-- LOADING -->
 <div id="loading">
@@ -1575,12 +1576,7 @@ isUnlocked = true; // unlock supaya navigasi bebas
 buildIndicator();
 buildPetals();
 
-// Coba autoplay musik dari awal — fallback ke tombol FAB jika browser blokir
-window.addEventListener('load', () => {
-  const audio = document.getElementById('bg-music-player');
-  audio.volume = 0.5;
-  audio.play().catch(() => {});
-});
+// Musik dihandle oleh iframe Google Drive (autoplay otomatis)
 
 // Mulai dari page 1 (countdown), tapi bisa langsung klik lanjut kapan saja
 currentPage = 1;
