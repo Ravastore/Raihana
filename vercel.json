@@ -12,7 +12,7 @@
   ],
   "headers": [
     {
-      "source": "/asset/(.*)\\.mp3",
+      "source": "/asset/Lagu.mp3",
       "headers": [
         { "key": "Content-Type", "value": "audio/mpeg" },
         { "key": "Accept-Ranges", "value": "bytes" }
