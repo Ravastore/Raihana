@@ -1286,14 +1286,7 @@ let envelopeOpened = false;
 let musicStarted = false;
 
 function startBgMusic() {
-  if (!musicStarted) {
-    musicStarted = true;
-    const audio = document.getElementById('bg-music-player');
-    audio.volume = 0.5;
-    audio.play().catch(() => {
-
-    });
-  }
+  // Musik dihandle oleh iframe Google Drive — autoplay otomatis
 }
 
 
