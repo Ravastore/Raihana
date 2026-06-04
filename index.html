@@ -22,6 +22,7 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+.page { overflow-x: hidden !important; }
 
 html { scroll-behavior: smooth; }
 
@@ -367,26 +368,33 @@ body {
   position: relative;
   overflow: hidden;
   display: flex;
+  width: 100%;
 }
 .story-track {
   display: flex;
   transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
   height: 100%;
+  width: 100%;
 }
 .story-card {
   min-width: 100%;
-  padding: 1rem 1.5rem 2rem;
+  width: 100%;
+  padding: 1rem 1.5rem 1.5rem;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  gap: 1.5rem;
+  gap: 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 .story-img-frame {
-  width: 100%; max-width: 340px;
+  width: 100%;
+  max-width: min(320px, calc(100vw - 3rem));
   aspect-ratio: 4/3;
   border-radius: 16px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 12px 48px rgba(150,20,80,0.18);
+  box-shadow: 0 8px 32px rgba(150,20,80,0.18);
+  flex-shrink: 0;
 }
 .story-img-placeholder {
   width: 100%; height: 100%;
@@ -398,7 +406,11 @@ body {
   font-size: 0.95rem;
 }
 .story-text {
-  max-width: 380px; text-align: center;
+  width: 100%;
+  max-width: min(380px, calc(100vw - 3rem));
+  text-align: center;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
 }
 .story-date {
   font-size: 0.75rem; letter-spacing: 0.15em;
@@ -407,13 +419,15 @@ body {
 }
 .story-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.5rem; font-weight: 600;
-  color: var(--text-dark); margin-bottom: 0.75rem;
+  font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: 600;
+  color: var(--text-dark); margin-bottom: 0.5rem;
+  word-break: break-word;
 }
 .story-desc {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.05rem; line-height: 1.8;
+  font-size: clamp(0.9rem, 3vw, 1.05rem); line-height: 1.7;
   color: var(--text-mid);
+  word-break: break-word;
 }
 .story-nav {
   display: flex; align-items: center; justify-content: center;
@@ -442,13 +456,16 @@ body {
   padding: 0 0 3rem;
 }
 .gallery-grid {
-  columns: 2;
-  column-gap: 12px;
-  padding: 1rem 1rem 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 1rem;
   max-width: 700px;
+  width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
 }
-@media (min-width: 600px) { .gallery-grid { columns: 3; } }
+@media (min-width: 600px) { .gallery-grid { grid-template-columns: repeat(4, 1fr); } }
 .polaroid {
   break-inside: avoid;
   margin-bottom: 12px;
@@ -468,9 +485,11 @@ body {
 }
 .polaroid:hover { transform: translateY(-8px) scale(1.04) rotate(0deg) !important; box-shadow: 0 16px 40px rgba(150,20,80,0.2); }
 .polaroid-img {
-  width: 100%; aspect-ratio: 1;
+  width: 100%;
+  aspect-ratio: 1;
   display: flex; align-items: center; justify-content: center;
   overflow: hidden; border-radius: 2px;
+  background: var(--beige);
 }
 .polaroid-img img { width: 100%; height: 100%; object-fit: cover; }
 .polaroid-caption {
@@ -808,7 +827,7 @@ body {
   loop
   autoplay
   style="display:none"
-  src="https://drive.google.com/uc?export=download&id=1MRgnAC4_O8FHoTprTLItPmEZFmXRKVaa">
+  src="lagu.mp3" /* 🎵 TARUH FILE MP3 KAMU DI FOLDER YANG SAMA, RENAME JADI lagu.mp3 */>
 </audio>
 
 <!-- LOADING -->
@@ -1117,11 +1136,8 @@ const STORIES = [
 ];
 
 const GALLERY_ITEMS = [
-  // 📸 GALERI FOTO — ganti setiap "img" null dengan URL Google Drive
+  // 📸 GALERI FOTO (8 foto) — ganti setiap "img" null dengan URL Google Drive
   // Format URL: "https://drive.google.com/thumbnail?id=FILE_ID&sz=w800"
-  //
-  // Contoh cara aktifkan:
-  // { caption: "Momen favoritku 🤍", img: "https://drive.google.com/thumbnail?id=FILE_ID_GALERI_1&sz=w800" },
   { caption: "Momen favoritku 🤍",             img: null }, // 📸 GALERI FOTO 1
   { caption: "Selalu indah bersamamu",          img: null }, // 📸 GALERI FOTO 2
   { caption: "Senyummu, duniaku",               img: null }, // 📸 GALERI FOTO 3
@@ -1130,7 +1146,6 @@ const GALLERY_ITEMS = [
   { caption: "Hari yang sempurna",              img: null }, // 📸 GALERI FOTO 6
   { caption: "Bersamamu, segalanya jadi mudah", img: null }, // 📸 GALERI FOTO 7
   { caption: "Foto kesayangan 💕",              img: null }, // 📸 GALERI FOTO 8
-  { caption: "Masih dan akan terus",            img: null }, // 📸 GALERI FOTO 9
 ];
 
 const LOVE_CARDS = [
@@ -1275,39 +1290,11 @@ function startBgMusic() {
     const audio = document.getElementById('bg-music-player');
     audio.volume = 0.5;
     audio.play().catch(() => {
-      // Gagal (biasanya karena file:// atau CORS) — tampilkan tombol play manual
-      showMusicBtn();
+
     });
   }
 }
 
-function showMusicBtn() {
-  // Tampilkan floating music button supaya user bisa play manual
-  const btn = document.createElement('div');
-  btn.id = 'music-fab';
-  btn.title = 'Play musik';
-  btn.innerHTML = '🎵';
-  btn.style.cssText = `
-    position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 9998;
-    width: 48px; height: 48px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold-light), var(--gold));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.4rem; cursor: pointer;
-    box-shadow: 0 4px 20px rgba(240,100,180,0.5);
-    animation: pulseGlow 2s ease-in-out infinite;
-  `;
-  btn.onclick = () => {
-    const audio = document.getElementById('bg-music-player');
-    if (audio.paused) {
-      audio.play();
-      btn.innerHTML = '🔊';
-    } else {
-      audio.pause();
-      btn.innerHTML = '🎵';
-    }
-  };
-  document.body.appendChild(btn);
-}
 
 function openEnvelope() {
   if (envelopeOpened) return;
@@ -1592,7 +1579,7 @@ buildPetals();
 window.addEventListener('load', () => {
   const audio = document.getElementById('bg-music-player');
   audio.volume = 0.5;
-  audio.play().catch(() => showMusicBtn());
+  audio.play().catch(() => {});
 });
 
 // Mulai dari page 1 (countdown), tapi bisa langsung klik lanjut kapan saja
